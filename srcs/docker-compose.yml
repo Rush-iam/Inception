@@ -1,5 +1,5 @@
 version: "3.9"
-    
+
 services:
   nginx:
       build: requirements/nginx/
@@ -8,7 +8,20 @@ services:
       ports:
           - "443:443"
       restart: always
+  mariadb:
+      build:
+          context: requirements/mariadb/
+          args:
+              - MYSQL_USER
+              - MYSQL_PASSWORD
+              - WORDPRESS_DB_NAME
+      volumes:
+          - db:/var/lib/mysql
+      restart: always
   wordpress:
+      depends_on:
+          - nginx
+          - mariadb
       build: requirements/wordpress/
       volumes:
           - wordpress:/wordpress
@@ -19,6 +32,11 @@ volumes:
         driver_opts:
             type: none
             device: /Users/ngragas/data/wordpress
+            o: bind
+    db:
+        driver_opts:
+            type: none
+            device: /Users/ngragas/data/db
             o: bind
 
 
