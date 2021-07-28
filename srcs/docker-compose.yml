@@ -12,9 +12,10 @@ services:
       build:
           context: requirements/mariadb/
           args:
+              - MYSQL_ROOT_PASSWORD
               - MYSQL_USER
               - MYSQL_PASSWORD
-              - WORDPRESS_DB_NAME
+              - WP_DB_NAME
       volumes:
           - db:/var/lib/mysql
       restart: always
@@ -22,7 +23,21 @@ services:
       depends_on:
           - nginx
           - mariadb
-      build: requirements/wordpress/
+      build:
+          context: requirements/wordpress/
+          args:
+              - DOMAIN_NAME
+              - MYSQL_USER
+              - MYSQL_PASSWORD
+              - WP_DB_HOST=mariadb 
+              - WP_DB_NAME
+              - WP_SITE_TITLE
+              - WP_ADMIN_LOGIN
+              - WP_ADMIN_PASSWORD
+              - WP_ADMIN_EMAIL
+              - WP_USER_LOGIN
+              - WP_USER_PASSWORD
+              - WP_USER_EMAIL
       volumes:
           - wordpress:/wordpress
       restart: always
