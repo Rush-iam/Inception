@@ -2,60 +2,90 @@ version: "3.9"
 
 services:
   nginx:
-      build: requirements/nginx/
-      volumes:
-          - wordpress:/var/www/html
-      ports:
-          - "443:443"
-      restart: always
+    depends_on:
+      - wordpress
+    hostname: $DOMAIN_NAME
+    build:
+      context: requirements/nginx/
+      args:
+        - DOMAIN_NAME
+    volumes:
+      - wordpress:/var/www/html
+    ports:
+      - "443:443"
+    restart: always
+
   mariadb:
-      build:
-          context: requirements/mariadb/
-          args:
-              - MYSQL_ROOT_PASSWORD
-              - MYSQL_USER
-              - MYSQL_PASSWORD
-              - WP_DB_NAME
-      volumes:
-          - db:/var/lib/mysql
-      restart: always
+    build:
+      context: requirements/mariadb/
+      args:
+        - MYSQL_ROOT_PASSWORD
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+        - WP_DB_NAME
+    volumes:
+      - db:/var/lib/mysql
+    restart: always
+
+  redis:
+    build:
+      context: requirements/redis/
+    privileged: true
+    restart: always
+
   wordpress:
-      depends_on:
-          - nginx
-          - mariadb
-      build:
-          context: requirements/wordpress/
-          args:
-              - DOMAIN_NAME
-              - MYSQL_USER
-              - MYSQL_PASSWORD
-              - WP_DB_HOST=mariadb 
-              - WP_DB_NAME
-              - WP_SITE_TITLE
-              - WP_ADMIN_LOGIN
-              - WP_ADMIN_PASSWORD
-              - WP_ADMIN_EMAIL
-              - WP_USER_LOGIN
-              - WP_USER_PASSWORD
-              - WP_USER_EMAIL
-      volumes:
-          - wordpress:/wordpress
-      restart: always
+    depends_on:
+      - mariadb
+      - redis
+    build:
+      context: requirements/wordpress/
+      args:
+        - DOMAIN_NAME
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+        - WP_DB_HOST=mariadb
+        - WP_DB_NAME
+        - WP_SITE_TITLE
+        - WP_ADMIN_LOGIN
+        - WP_ADMIN_PASSWORD
+        - WP_ADMIN_EMAIL
+        - WP_USER_LOGIN
+        - WP_USER_PASSWORD
+        - WP_USER_EMAIL
+        - WP_REDIS_HOST=redis
+    volumes:
+      - wordpress:/wordpress
+    restart: always
+
+  ftp:
+    build:
+      context: requirements/ftp/
+      args:
+        - FTP_USER
+        - FTP_PASSWORD
+    volumes:
+      - wordpress:/wordpress
+    ports:
+      - "21:21"
+      - "30000:30000"
+    restart: always
+
 
 volumes:
-    wordpress:
-        driver_opts:
-            type: none
-            device: /home/ngragas/data/wordpress
-            o: bind
-    db:
-        driver_opts:
-            type: none
-            device: /home/ngragas/data/db
-            o: bind
+  wordpress:
+    driver_opts:
+      type: none
+      device: ${HOME}/data/wordpress
+      o: bind
+  db:
+    driver_opts:
+      type: none
+      device: ${HOME}/data/db
+      o: bind
+
 
 networks:
-    default:
-        driver: bridge
-        name: inception_net
+  default:
+    driver: bridge
+    name: inception_net
 
