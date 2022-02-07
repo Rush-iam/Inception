@@ -1,8 +1,8 @@
 FROM debian:buster
-ARG DEBIAN_FRONTEND=noninteractive
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get update
 
-RUN apt-get update &&\
-	apt-get -y install php7.3-fpm php7.3-mysql php7.3-mbstring\
+RUN apt-get -y install php7.3-fpm php7.3-mysql php7.3-mbstring\
 	php7.3-gd php7.3-curl php7.3-dom php7.3-imagick php7.3-zip php7.3-intl\
     php-redis
 RUN mkdir /run/php &&\
@@ -11,11 +11,10 @@ RUN mkdir /run/php &&\
 
 RUN	apt-get -y install wget &&\
 	wget https://wordpress.org/latest.tar.gz --read-timeout=10 -O - | tar -xzC /
-RUN	mkdir /var/www &&\
-	ln -s /wordpress /var/www/html &&\
-	chown -R www-data:www-data /wordpress &&\
+RUN	chown -R www-data:www-data /wordpress &&\
 	chmod -R 775 /wordpress &&\
-	usermod -aG root www-data
+	usermod -aG root www-data &&\
+	ln -s /wordpress /www
 
 RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar &&\
     chmod +x wp-cli.phar &&\

@@ -1,7 +1,8 @@
 FROM debian:buster
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update &&\
-	apt-get -y install mariadb-server
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get update
+
+RUN apt-get -y install mariadb-server
 COPY conf/my.cnf /etc/mysql/my.cnf
 
 ARG MYSQL_ROOT_PASSWORD

@@ -1,8 +1,8 @@
 FROM debian:buster
-ARG DEBIAN_FRONTEND=noninteractive
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get update
 
-RUN apt-get update &&\
-	apt-get -y install redis-server
+RUN apt-get -y install redis-server
 
 RUN echo "echo 1 > /proc/sys/vm/overcommit_memory\n\
     echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled\n\

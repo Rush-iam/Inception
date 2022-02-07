@@ -1,8 +1,8 @@
 FROM debian:buster
-ARG DEBIAN_FRONTEND=noninteractive
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN apt-get update
 
-RUN apt-get update &&\
-	apt-get -y install vsftpd
+RUN apt-get -y install vsftpd
 RUN mkdir -p /var/run/vsftpd/empty &&\
 	echo "\n\
 local_root=/wordpress\n\
