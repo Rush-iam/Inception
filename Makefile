@@ -27,12 +27,12 @@ $(DATA_PORTFOLIO_DIR):
 	mkdir -p $@
 up: | $(DATA_DB_DIR) $(DATA_WP_DIR) $(DATA_PORTFOLIO_DIR)
 	cd $(SRCS) && docker-compose -p "$(NAME)" up -d && \
-	docker exec $(NAME_LOWER)-wordpress-1 /bin/sh -c /init.sh
+	docker exec inception_wordpress sh -c /init.sh
 	echo "127.0.0.1 ngragas.42.fr" >> /etc/hosts
 start:
 	cd $(SRCS) && docker-compose -p "$(NAME)" up -d
 stop:
-	cd $(SRCS) && docker-compose -p "$(NAME)" stop
+	cd $(SRCS) && docker-compose -p "$(NAME)" stop -t 3
 clean:
 	cd $(SRCS) && docker-compose -p "$(NAME)" rm -f -s -t 3
 fclean:

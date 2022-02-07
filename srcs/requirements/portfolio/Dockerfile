@@ -1,6 +1,6 @@
 FROM debian:buster
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-RUN apt-get update
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
+	&& apt-get update
 
 RUN apt-get -y install nginx-light &&\
 	rm /etc/nginx/sites-enabled/default

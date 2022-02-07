@@ -36,6 +36,7 @@ services:
     restart: always
 
   wordpress:
+    container_name: 'inception_wordpress'
     depends_on:
       - mariadb
       - redis
@@ -86,6 +87,18 @@ services:
       - portfolio:/portfolio
     ports:
       - "80:80"
+    restart: always
+
+  container-stats:
+    build:
+      context: requirements/container-stats/
+    environment:
+      STATS_UPDATE_INTERVAL: 10
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - '/home/docker/storage/stats/db:/opt/docker-stats/db'
+    ports:
+      - '8080:8080'
     restart: always
 
 volumes:

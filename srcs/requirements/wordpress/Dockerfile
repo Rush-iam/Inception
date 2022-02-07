@@ -1,6 +1,6 @@
 FROM debian:buster
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-RUN apt-get update
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections \
+	&& apt-get update
 
 RUN apt-get -y install php7.3-fpm php7.3-mysql php7.3-mbstring\
 	php7.3-gd php7.3-curl php7.3-dom php7.3-imagick php7.3-zip php7.3-intl\
