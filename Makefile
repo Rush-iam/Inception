@@ -16,13 +16,16 @@ SRCS = srcs/
 DATA_DIR = ~/data
 DATA_DB_DIR = $(DATA_DIR)/db
 DATA_WP_DIR = $(DATA_DIR)/wordpress
+DATA_PORTFOLIO_DIR = $(DATA_DIR)/portfolio
 
 all: up
 $(DATA_DB_DIR):
 	mkdir -p $@
 $(DATA_WP_DIR):
 	mkdir -p $@
-up: | $(DATA_DB_DIR) $(DATA_WP_DIR)
+$(DATA_PORTFOLIO_DIR):
+	mkdir -p $@
+up: | $(DATA_DB_DIR) $(DATA_WP_DIR) $(DATA_PORTFOLIO_DIR)
 	cd $(SRCS) && docker-compose -p "$(NAME)" up -d && \
 	docker exec $(NAME_LOWER)-wordpress-1 /bin/sh -c /init.sh
 	echo "127.0.0.1 ngragas.42.fr" >> /etc/hosts
