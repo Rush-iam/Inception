@@ -2,17 +2,18 @@ version: "3.9"
 
 services:
   nginx:
-    depends_on:
-      - wordpress
-      - adminer
-    hostname: $DOMAIN_NAME
     build:
       context: requirements/nginx/
       args:
         - DOMAIN_NAME
+    image: nginx
+    depends_on:
+      - wordpress
+      - adminer
     volumes:
       - wordpress:/www
       - adminer:/adminer
+    hostname: $DOMAIN_NAME
     ports:
       - "443:443"
     restart: always
@@ -25,21 +26,13 @@ services:
         - MYSQL_USER
         - MYSQL_PASSWORD
         - WP_DB_NAME
+    image: mariadb
     volumes:
       - db:/var/lib/mysql
     restart: always
 
-  redis:
-    build:
-      context: requirements/redis/
-    privileged: true
-    restart: always
-
   wordpress:
-    container_name: 'inception_wordpress'
-    depends_on:
-      - mariadb
-      - redis
+    container_name: 'inception-wordpress'
     build:
       context: requirements/wordpress/
       args:
@@ -56,23 +49,34 @@ services:
         - WP_USER_PASSWORD
         - WP_USER_EMAIL
         - WP_REDIS_HOST=redis
+    image: wordpress
+    depends_on:
+      - mariadb
+      - redis
     volumes:
       - wordpress:/wordpress
     restart: always
 
+  redis:
+    build: requirements/bonus/redis/
+    image: redis
+    privileged: true
+    restart: always
+
   adminer:
-    build:
-      context: requirements/adminer/
+    build: requirements/adminer/
+    image: adminer
     volumes:
       - adminer:/adminer
     restart: always
 
   ftp:
     build:
-      context: requirements/ftp/
+      context: requirements/bonus/ftp/
       args:
         - FTP_USER
         - FTP_PASSWORD
+    image: ftp
     volumes:
       - wordpress:/wordpress
     ports:
@@ -81,17 +85,17 @@ services:
     restart: always
 
   portfolio:
-    build:
-      context: requirements/portfolio/
+    build: requirements/bonus/portfolio/
+    image: portfolio
     volumes:
       - portfolio:/portfolio
     ports:
-      - "80:80"
+      - "8000:80"
     restart: always
 
   container-stats:
-    build:
-      context: requirements/container-stats/
+    build: requirements/bonus/container-stats/
+    image: container-stats
     environment:
       STATS_UPDATE_INTERVAL: 10
     volumes:
@@ -123,6 +127,5 @@ volumes:
 
 networks:
   default:
-    driver: bridge
     name: inception_net
 

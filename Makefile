@@ -11,7 +11,6 @@
 # **************************************************************************** #
 
 NAME = Inception
-NAME_LOWER = $(shell echo $(NAME) | tr A-Z a-z)
 SRCS = srcs/
 DATA_DIR = ~/data
 DATA_DB_DIR = $(DATA_DIR)/db
@@ -26,9 +25,9 @@ $(DATA_WP_DIR):
 $(DATA_PORTFOLIO_DIR):
 	mkdir -p $@
 up: | $(DATA_DB_DIR) $(DATA_WP_DIR) $(DATA_PORTFOLIO_DIR)
-	cd $(SRCS) && docker-compose -p "$(NAME)" up -d && \
-	docker exec inception_wordpress sh -c /init.sh
-	echo "127.0.0.1 ngragas.42.fr" >> /etc/hosts
+	cd $(SRCS) && docker-compose -p "$(NAME)" up --build -d && \
+	docker exec "inception-wordpress" sh -c "/init.sh"
+	sudo echo "127.0.0.1 ngragas.42.fr" >> /etc/hosts
 start:
 	cd $(SRCS) && docker-compose -p "$(NAME)" up -d
 stop:
