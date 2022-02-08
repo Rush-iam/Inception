@@ -33,7 +33,7 @@ start:
 stop:
 	cd $(SRCS) && docker-compose -p "$(NAME)" stop -t 3
 clean:
-	cd $(SRCS) && docker-compose -p "$(NAME)" rm -f -s -t 3
+	cd $(SRCS) && docker-compose -p "$(NAME)" rm -f -s
 fclean:
 	cd $(SRCS) && docker-compose -p "$(NAME)" down --rmi all -v -t 3
 	sudo rm -rf $(DATA_DIR)
