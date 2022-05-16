@@ -64,7 +64,7 @@ services:
     restart: always
 
   adminer:
-    build: requirements/adminer/
+    build: requirements/bonus/adminer/
     image: adminer
     volumes:
       - adminer:/adminer
